@@ -40,11 +40,11 @@ Features:
     let response = await Car.cache().findOne()
     let response = await Car.cache().findByPk()
     let response = await Car.cache().create()
+    let response = await Car.cache().bulkCreate()
     let response = await Car.cache().update()
     
     // method that need primary key params: example here the "id" primary key
     let response = Car.cache(id).destroy()
-    let response = Car.cache().findAll()
 
 ### Caching Rest API
     import { RestApiCaching } from "lakehouse-sequelize-restapi-keycloak-cache";
