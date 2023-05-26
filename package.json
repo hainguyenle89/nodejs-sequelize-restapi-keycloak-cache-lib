@@ -1,6 +1,6 @@
 {
   "name": "lakehouse-sequelize-restapi-keycloak-cache",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "caching for all types of data cached on redis hosts/cluster: data from database and sequelize ORM, rest API, keycloak admin api library",
   "main": "src/index.js",
   "type": "module",
@@ -9,14 +9,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hainguyenle89/nodejs-sequelize-cache-lib.git"
+    "url": "git+hhttps://github.com/hainguyenle89/nodejs-sequelize-restapi-keycloak-cache-lib.git"
   },
   "keywords": [
     "lakehouse",
     "caching",
     "redis",
     "sequelize",
-    "model"
+    "model",
+    "rest api",
+    "keycloak admin client"
   ],
   "author": "Nguyen Le Hai",
   "license": "ISC",
@@ -25,7 +27,7 @@
     "axios": "^1.1.3"
   },
   "bugs": {
-    "url": "https://github.com/hainguyenle89/nodejs-sequelize-cache-lib/issues"
+    "url": "https://github.com/hainguyenle89/nodejs-sequelize-restapi-keycloak-cache-lib/issues"
   },
-  "homepage": "https://github.com/hainguyenle89/nodejs-sequelize-cache-lib#readme"
+  "homepage": "https://github.com/hainguyenle89/nodejs-sequelize-restapi-keycloak-cache-lib#readme"
 }
