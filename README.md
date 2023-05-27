@@ -1,6 +1,6 @@
 # lakehouse-sequelize-restapi-keycloak-cache
-![](https://img.shields.io/github/stars/pandao/editor.md.svg) ![](https://img.shields.io/github/forks/pandao/editor.md.svg) ![](https://img.shields.io/github/tag/pandao/editor.md.svg) ![](https://img.shields.io/github/release/pandao/editor.md.svg) ![](https://img.shields.io/github/issues/pandao/editor.md.svg) ![](https://img.shields.io/bower/v/editor.md.svg)
 
+**Please give a <img src="https://github.blog/wp-content/uploads/2020/09/github-stars-logo_Color.png" width="25" height="25"> for this github library if you find it useful for your project.**
 
 This is the library of nodejs for caching response data of some popular types of requests: 
 + Sequelize model on some kinds of databases: mysql, postgresql...
