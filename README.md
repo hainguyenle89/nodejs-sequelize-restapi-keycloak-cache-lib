@@ -13,6 +13,7 @@ Features:
     # npm install --save lakehouse-sequelize-restapi-keycloak-cache
 
 ### Create Redis Client
+    import { SequelizeModelCaching, RedisCache } from "lakehouse-sequelize-restapi-keycloak-cache";
     const redisNode = {
          "port": 6379,
          "host": "127.0.0.1"
