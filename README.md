@@ -58,7 +58,7 @@ Features:
     
     // User service
     
-    // findAll before enabling cache
+    // findAll without enable caching
     async findAll(token) {
         var response = null;
         try {
@@ -72,7 +72,7 @@ Features:
           throw error;
         }
     }
-    // => findAll after enabling cache
+    // => findAll with enable caching
     async findAll(token) {
         var response = null;
         try {
