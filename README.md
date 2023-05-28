@@ -3,7 +3,7 @@
 **Please give a <img src="https://github.blog/wp-content/uploads/2020/09/github-stars-logo_Color.png" width="25" height="25"> for this github library if you find it useful for your project.**
 
 This is the library of nodejs for caching response data of some popular types of requests: 
-+ Sequelize model on some kinds of databases: mysql, postgresql...
++ Sequelize model on the databases that sequelize orm supports: mysql, postgresql...
 + Rest API request
 + Keycloak admin client Api request (not executed)
 
@@ -72,20 +72,92 @@ Features:
           throw error;
         }
     }
-    // => findAll with enable caching
+    // => findAll with enable caching: no  logged in user id
     async findAll(token) {
         var response = null;
         try {
           let queryUrl = 'https://abc.com/user';
           let apiMethod = "GET"
-          let data = RestApiCaching.apiCache(token, this.moduleName, queryUrl, null, apiMethod);
+	  let moduleName = this.constructor.name;
+          let data = RestApiCaching.apiCache(token, null, moduleName, queryUrl, null, apiMethod);
           return data;
         } catch (error) {
           throw error;
         }
     }
     
-    // => nearly the same with: saveOne, editOne and deleteOne
+    // => findAll with enable caching: no  logged in user id, but the token contain the logged in user id in the token.sub attribute
+    async findAll(token) {
+        var response = null;
+        try {
+          let queryUrl = 'https://abc.com/user';
+          let apiMethod = "GET"
+	  let moduleName = this.constructor.name;
+          let data = RestApiCaching.apiCache(token, null, moduleName, queryUrl, null, apiMethod);
+          return data;
+        } catch (error) {
+          throw error;
+        }
+    }
+    
+    // => findAll with enable caching: with logged in user id
+    async findAll(token, loggedInUserId) {
+        var response = null;
+        try {
+          let queryUrl = 'https://abc.com/user';
+          let apiMethod = "GET"
+	  let moduleName = this.constructor.name;
+          let data = RestApiCaching.apiCache(token, loggedInUserId, moduleName, queryUrl, null, apiMethod);
+          return data;
+        } catch (error) {
+          throw error;
+        }
+    }
+    
+    // => nearly the same with: saveOne, editOne and deleteOne: with logged in user id
+    async saveOne(token, user, loggedInUserId) {
+        var dateCreate = new Date();
+        user.attributes.dateCreate = [dateCreate];
+        try {
+          let queryUrl = "https://abc.com/user";
+          let data = user;
+          let apiMethod = "POST";
+	  let moduleName = this.constructor.name;
+          let response = RestApiCaching.apiCache(token, loggedInUserId, moduleName, queryUrl, data, apiMethod);
+          return response;
+        } catch (error) {
+          return error;
+        }
+      }
+    
+      async editOne(token, user, loggedInUserId) {
+        var dateModify = new Date();
+        user.attributes.dateModify = [dateModify];
+        try {
+          let queryUrl = "https://abc.com/user/" + user.id;
+          let data = user;
+          let apiMethod = "PUT";
+	  let moduleName = this.constructor.name;
+          let response = RestApiCaching.apiCache(token, loggedInUserId, moduleName, queryUrl, data, apiMethod);
+          return response;
+        } catch (error) {
+          throw error;
+        }
+      }
+    
+      async deleteOne(token, userId, loggedInUserId) {
+        try {
+          let queryUrl = "https://abc.com/user/" + user.id;
+          let apiMethod = "DELETE";
+	  let moduleName = this.constructor.name;
+          let response = RestApiCaching.apiCache(token, loggedInUserId, moduleName, queryUrl, null, apiMethod);
+          return response;
+        } catch (error) {
+          throw error;
+        }
+      }
+      
+      // => nearly the same with: saveOne, editOne and deleteOne: without logged in user id
     async saveOne(token, user) {
         var dateCreate = new Date();
         user.attributes.dateCreate = [dateCreate];
@@ -93,7 +165,8 @@ Features:
           let queryUrl = "https://abc.com/user";
           let data = user;
           let apiMethod = "POST";
-          let response = RestApiCaching.apiCache(token, this.moduleName, queryUrl, data, apiMethod);
+	  let moduleName = this.constructor.name;
+          let response = RestApiCaching.apiCache(token, null, moduleName, queryUrl, data, apiMethod);
           return response;
         } catch (error) {
           return error;
@@ -107,7 +180,8 @@ Features:
           let queryUrl = "https://abc.com/user/" + user.id;
           let data = user;
           let apiMethod = "PUT";
-          let response = RestApiCaching.apiCache(token, this.moduleName, queryUrl, data, apiMethod);
+	  let moduleName = this.constructor.name;
+          let response = RestApiCaching.apiCache(token, null, moduleName, queryUrl, data, apiMethod);
           return response;
         } catch (error) {
           throw error;
@@ -118,7 +192,8 @@ Features:
         try {
           let queryUrl = "https://abc.com/user/" + user.id;
           let apiMethod = "DELETE";
-          let response = RestApiCaching.apiCache(token, this.moduleName, queryUrl, null, apiMethod);
+	  let moduleName = this.constructor.name;
+          let response = RestApiCaching.apiCache(token, null, moduleName, queryUrl, null, apiMethod);
           return response;
         } catch (error) {
           throw error;
