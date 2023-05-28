@@ -57,6 +57,7 @@ Features:
     RestApiCaching.redisApiClient = redisClient;
     
     // User service
+    // token: it's the user bearer token returned when the user log in to the portal
     
     // findAll without enable caching
     async findAll(token) {
