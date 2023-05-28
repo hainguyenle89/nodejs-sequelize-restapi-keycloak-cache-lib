@@ -1,4 +1,5 @@
 import axios from "axios";
+import jwt from "jsonwebtoken";
 
 class RestApiCaching {
     static redisApiClient;
@@ -6,18 +7,42 @@ class RestApiCaching {
 
     }
 
-    static async apiCache(token, moduleName, queryUrl, data, apiMethod) {
+    static decode(accessToken) {
+        if (accessToken == undefined) {
+          console.error("JWT Helper decodeToken: Missing token");
+          throw new Error("Can not decode: Missing token");
+        } else {
+          try {
+            accessToken = accessToken.replace("Bearer ", "");
+            let decodeToken = jwt.decode(accessToken);
+            return decodeToken;
+          } catch (error) {
+            console.error("JWT Helper decodeToken: Invalid token");
+            throw error;
+          }
+        }
+    }
+
+    static async apiCache(token, userIdLoggedIn, moduleName, queryUrl, data, apiMethod) {
+        // set value for token and the logged user base on some conditions
         let realToken;
+        let userLoggedIn;
         if(!token) {
             realToken = '';
         } else {
             realToken = token;
+            if(!userIdLoggedIn) {
+                userLoggedIn = RestApiCaching.decode(realToken).sub ? RestApiCaching.decode(realToken).sub : '';
+            } else {
+                userLoggedIn = userIdLoggedIn;
+            }
         }
         // let hashKey = [
         //     moduleName,
         //     "GET"
         // ];
         let hashKey = [
+            userLoggedIn,
             moduleName
         ];
         let key = queryUrl;
