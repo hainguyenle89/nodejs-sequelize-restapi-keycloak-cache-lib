@@ -44,24 +44,24 @@ Features:
     // + "id" is the primary key of the model instance with which the user is interacting
     
     // caching for each loggedInUserId
-    let response = await Car.cache(loggedInUserId, null).findAll()
-    let response = await Car.cache(loggedInUserId, null).findAndCountAll()
-    let response = await Car.cache(loggedInUserId, null).findOne()
-    let response = await Car.cache(loggedInUserId, null).findByPk()
-    let response = await Car.cache(loggedInUserId, null).create()
-    let response = await Car.cache(loggedInUserId, null).bulkCreate()
-    let response = await Car.cache(loggedInUserId, id).update()
-    let response = Car.cache(loggedInUserId, id).destroy()
+    let response = await Car.cache(loggedInUserId, null).findAll();
+    let response = await Car.cache(loggedInUserId, null).findAndCountAll();
+    let response = await Car.cache(loggedInUserId, null).findOne();
+    let response = await Car.cache(loggedInUserId, null).findByPk();
+    let response = await Car.cache(loggedInUserId, null).create();
+    let response = await Car.cache(loggedInUserId, null).bulkCreate();
+    let response = await Car.cache(loggedInUserId, id).update();
+    let response = await Car.cache(loggedInUserId, id).destroy();
     
     // caching without the need of knowing who has logged into the system
-    let response = await Car.cache().findAll()
-    let response = await Car.cache().findAndCountAll()
-    let response = await Car.cache().findOne()
-    let response = await Car.cache().findByPk()
-    let response = await Car.cache().create()
-    let response = await Car.cache().bulkCreate()
-    let response = await Car.cache(null, id).update()
-    let response = Car.cache(null, id).destroy()
+    let response = await Car.cache().findAll();
+    let response = await Car.cache().findAndCountAll();
+    let response = await Car.cache().findOne();
+    let response = await Car.cache().findByPk();
+    let response = await Car.cache().create();
+    let response = await Car.cache().bulkCreate();
+    let response = await Car.cache(null, id).update();
+    let response = await Car.cache(null, id).destroy();
     
     // Note that with only postgresql, the sequelize ORM will return the updated object with id in the model update() command: using option: "returning: true":
     let loggedInUserId = JwtHelper.decode(token).sub;
