@@ -144,8 +144,9 @@ class CachingUtils {
     }
     
     const hashKey = [
-      CachingUtils.getInstanceModel(instance).name,
-      compositeKey.hashKey
+      compositeKey.hashKey,
+      // CachingUtils.getInstanceModel(instance).name
+      
     ]
   
     let key = compositeKey.key;
@@ -153,7 +154,7 @@ class CachingUtils {
     //   // compositeKey.key.push(customKey);
     //   key = key+':'+customKey;
     // } 
-    if (compositeKey.action === 'create' || compositeKey.action === 'update') {
+    if (compositeKey.action === 'create') {
       // compositeKey.key.push(...CachingUtils.getInstanceCacheKey(instance))
       key += CachingUtils.getInstanceCacheKey(instance);
     }
@@ -183,8 +184,9 @@ class CachingUtils {
     }
     
     const hashKey = [
-      model.name,
-      compositeKey.hashKey
+      compositeKey.hashKey,
+      // model.name
+      
     ]
   
     // change instances array to instances object to set multiple key and value to a hash key
@@ -204,8 +206,9 @@ class CachingUtils {
   // set array value of a key and the hash key to a hash set
   static async saveHashAll(cacheClient, model, instances, compositeKey) {
     const hashKey = [
-      model.name,
-      compositeKey.hashKey
+      compositeKey.hashKey,
+      // model.name
+      
     ]
   
     // return cacheClient.set(key, instances.map(CachingUtils.instanceToData))
@@ -246,7 +249,7 @@ class CachingUtils {
   // get value from a key and the hash key from a hash set
   static async getHashAll(cacheClient, model, compositeKey) {
     const hashKey = [
-      model.name,
+      // model.name,
       compositeKey.hashKey
     ]
   
@@ -283,8 +286,8 @@ class CachingUtils {
   // get single value from a key and the hash key from a hash set
   static async getHash(cacheClient, model, compositeKey) {
     const hashKey = [
-      model.name,
-      compositeKey.hashKey
+      compositeKey.hashKey,
+      // model.name
     ]
 
     let key = compositeKey.key;
@@ -313,16 +316,16 @@ class CachingUtils {
     
   static async clearKey(cacheClient, model, customKey) {
     const key = [
-      model.name,
-      customKey
+      customKey,
+      // model.name
     ]
     return await cacheClient.del(key)
   }
 
   static async clearHashKey(cacheClient, model, hashKey, customKey) {
     const hashK = [
-      model.name,
-      hashKey
+      hashKey,
+      // model.name
     ]
     return await cacheClient.hdel(hashK, customKey)
   }
