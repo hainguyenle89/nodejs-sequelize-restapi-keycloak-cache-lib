@@ -138,7 +138,7 @@ class CachingUtils {
   }
     
   // set single value of a key and the hash key to a hash set
-  static async saveHash(cacheClient, instance, compositeKey, customKey) {
+  static async saveHash(cacheClient, instance, compositeKey) {
     if (!instance) {
       return Promise.resolve(instance)
     }
@@ -149,10 +149,10 @@ class CachingUtils {
     ]
   
     let key = compositeKey.key;
-    if (customKey) {
-      // compositeKey.key.push(customKey);
-      key = key+':'+customKey;
-    } 
+    // if (customKey) {
+    //   // compositeKey.key.push(customKey);
+    //   key = key+':'+customKey;
+    // } 
     if (compositeKey.action === 'create' || compositeKey.action === 'update') {
       // compositeKey.key.push(...CachingUtils.getInstanceCacheKey(instance))
       key += CachingUtils.getInstanceCacheKey(instance);
@@ -281,17 +281,17 @@ class CachingUtils {
   }
 
   // get single value from a key and the hash key from a hash set
-  static async getHash(cacheClient, model, compositeKey, customKey) {
+  static async getHash(cacheClient, model, compositeKey) {
     const hashKey = [
       model.name,
       compositeKey.hashKey
     ]
 
     let key = compositeKey.key;
-    if (customKey) {
-      // compositeKey.key.push(customKey);
-      key = key+':'+customKey;
-    }
+    // if (customKey) {
+    //   // compositeKey.key.push(customKey);
+    //   key = key+':'+customKey;
+    // }
 
   
     let data = await cacheClient.hget(hashKey, key);

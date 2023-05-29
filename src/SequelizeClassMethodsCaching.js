@@ -6,7 +6,7 @@ class SequelizeClassMethodsCaching {
     constructor() {
     }
 
-    static buildClassMethodsForCaching(cacheClient, sequelizeModel, customKey) {
+    static buildClassMethodsForCaching(cacheClient, sequelizeModel, loggedInUserId, cid) {
         return {
             getCacheClient() {
                 return cacheClient;
@@ -14,38 +14,46 @@ class SequelizeClassMethodsCaching {
 
             async create() {
                 let compositeKey = {
-                    'hashKey': 'findByPk',
+                    'hashKey': '',
                     'key': '',
                     'action': 'create'
                 };
+                compositeKey['hashKey'] = loggedInUserId ? loggedInUserId+":findByPk" : 'findByPk';
+                compositeKey['key'] = cid ? cid : '';
                 let instance = await sequelizeModel.create.apply(sequelizeModel, arguments);
                 await CachingUtils.saveHash(cacheClient, instance, compositeKey);
                 // return CachingUtils.save(cacheClient, instance, 'id:'+instance.dataValues.id);
 
                 // clear hashKey 'find' because a new record has been added
-                await CachingUtils.clearKey(cacheClient, sequelizeModel, 'find');
+                let deleteKey = loggedInUserId ? loggedInUserId+':find' : 'find';
+                await CachingUtils.clearKey(cacheClient, sequelizeModel, deleteKey);
                 return instance;
             },
 
             async bulkCreate() {
                 let compositeKey = {
-                    'hashKey': 'findByPk',
+                    'hashKey': '',
+                    'key': '',
                     'action': 'bulkCreate'
                 };
+                compositeKey['hashKey'] = loggedInUserId ? loggedInUserId+":findByPk" : 'findByPk';
                 let instances = await sequelizeModel.bulkCreate.apply(sequelizeModel, arguments);
                 await CachingUtils.saveHashMultiKeys(cacheClient, sequelizeModel, instances, compositeKey);
                 // clear hashKey 'find' because new records has been added
-                await CachingUtils.clearKey(cacheClient, sequelizeModel, 'find');
+                let deleteKey = loggedInUserId ? loggedInUserId+':find' : 'find';
+                await CachingUtils.clearKey(cacheClient, sequelizeModel, deleteKey);
                 return instances;
             },
 
             async findByPk(id) {
                 let compositeKey = {
-                    'hashKey': 'findByPk',
-                    'key': id,
-                    'action': 'find'
+                    'hashKey': '',
+                    'key': '',
+                    'action': 'create'
                 };
-                return await CachingUtils.getHash(cacheClient, sequelizeModel, compositeKey, customKey)
+                compositeKey['hashKey'] = loggedInUserId ? loggedInUserId+":findByPk" : 'findByPk';
+                compositeKey['key'] = id ? id : '';
+                return await CachingUtils.getHash(cacheClient, sequelizeModel, compositeKey)
                     .then(instance => {
                         if (instance) {
                             return instance
@@ -53,7 +61,7 @@ class SequelizeClassMethodsCaching {
 
                         return (sequelizeModel.findByPk || sequelizeModel.findById).apply(sequelizeModel, arguments)
                             .then(instance => { 
-                                return CachingUtils.saveHash(cacheClient, instance, compositeKey, customKey)
+                                return CachingUtils.saveHash(cacheClient, instance, compositeKey)
                             })
                     })
             },
@@ -67,22 +75,22 @@ class SequelizeClassMethodsCaching {
             // },
 
             async update(data) {
-                if(!customKey) {
-                    customKey = '';
-                }
                 let compositeKey = {
-                    'hashKey': 'findByPk',
+                    'hashKey': '',
                     'key': '',
                     'action': 'update'
                 };
+                compositeKey['hashKey'] = loggedInUserId ? loggedInUserId+":findByPk" : 'findByPk';
+                compositeKey['key'] = cid ? cid : '';
                 
                 // update only return the updated record if we specify 
                 // "returning: true" option in the sequelized Model.update() function
                 let instance = await sequelizeModel.update.apply(sequelizeModel, arguments);
                 // if update successfully on database
                 if (instance[0] === 1) {
-                    await CachingUtils.clearHashKey(cacheClient, sequelizeModel, compositeKey.hashKey, customKey);
-                    await CachingUtils.clearKey(cacheClient, sequelizeModel, 'find');
+                    await CachingUtils.clearHashKey(cacheClient, sequelizeModel, compositeKey.hashKey, compositeKey.key);
+                    let deleteKey = loggedInUserId ? loggedInUserId+':find' : 'find';
+                    await CachingUtils.clearKey(cacheClient, sequelizeModel, deleteKey);
                     if (instance[1])
                         return await CachingUtils.saveHash(cacheClient, sequelizeModel.build(instance[1][0].dataValues), compositeKey)
                     else
@@ -111,12 +119,13 @@ class SequelizeClassMethodsCaching {
 
             async findAll(queryOptions) {
                 let queryOptiontString = CachingUtils.stringifyQueryOptions(queryOptions);
-
                 let compositeKey = {
-                    'hashKey': 'find',
-                    'key': 'findAll'+queryOptiontString,
+                    'hashKey': '',
+                    'key': '',
                     'action': 'find'
                 };
+                compositeKey['hashKey'] = loggedInUserId ? loggedInUserId+':find' : 'find';
+                compositeKey.key = 'findAll'+queryOptiontString;
                 
                 // let instances = await CachingUtils.getAll(cacheClient, sequelizeModel, customKey);
                 let instances = await CachingUtils.getHashAll(cacheClient, sequelizeModel, compositeKey);
@@ -134,10 +143,12 @@ class SequelizeClassMethodsCaching {
                 let queryOptiontString = CachingUtils.stringifyQueryOptions(queryOptions);
 
                 let compositeKey = {
-                    'hashKey': 'find',
-                    'key': 'findAndCountAll'+queryOptiontString,
+                    'hashKey': '',
+                    'key': '',
                     'action': 'find'
                 };
+                compositeKey['hashKey'] = loggedInUserId ? loggedInUserId+':find' : 'find';
+                compositeKey.key = 'findAndCountAll'+queryOptiontString;
                 
                 // let instances = await CachingUtils.getAll(cacheClient, sequelizeModel, customKey);
                 let instances = await CachingUtils.getHashAll(cacheClient, sequelizeModel, compositeKey);
@@ -169,29 +180,35 @@ class SequelizeClassMethodsCaching {
             async findOne(queryOptions) {
                 let queryOptiontString = CachingUtils.stringifyQueryOptions(queryOptions);
                 let compositeKey = {
-                    'hashKey': 'find',
-                    'key': 'findOne'+queryOptiontString,
+                    'hashKey': '',
+                    'key': '',
                     'action': 'find'
                 };
-                let instance = await CachingUtils.getHash(cacheClient, sequelizeModel, compositeKey, customKey);
+                compositeKey['hashKey'] = loggedInUserId ? loggedInUserId+':find' : 'find';
+                compositeKey.key = 'findOne'+queryOptiontString;
+                let instance = await CachingUtils.getHash(cacheClient, sequelizeModel, compositeKey);
                 // let instance = await CachingUtils.get(cacheClient, sequelizeModel, customKey);
                 if (instance) {
                     return instance;
                 } else {
                     let instance = await sequelizeModel.findOne.apply(sequelizeModel, arguments);
-                    return await CachingUtils.saveHash(cacheClient, instance, compositeKey, customKey)
+                    return await CachingUtils.saveHash(cacheClient, instance, compositeKey)
                 }
             },
 
             async destroy() {
-                let hashKey = 'findByPk';
-                if(!customKey) {
-                    customKey = '';
-                }
+                let compositeKey = {
+                    'hashKey': '',
+                    'key': '',
+                    'action': 'find'
+                };
+                compositeKey['hashKey'] = loggedInUserId ? loggedInUserId+':findByPk' : 'findByPk';
+                compositeKey['key'] = cid ? cid : '';
                 await sequelizeModel.destroy.apply(sequelizeModel, arguments);
-                return await CachingUtils.clearHashKey(cacheClient, sequelizeModel, hashKey, customKey)
+                let deleteKey = loggedInUserId ? loggedInUserId+':find' : 'find';
+                return await CachingUtils.clearHashKey(cacheClient, sequelizeModel, compositeKey.hashKey, compositeKey.key)
                     .then(() => {
-                        return CachingUtils.clearKey(cacheClient, sequelizeModel, 'find');
+                        return CachingUtils.clearKey(cacheClient, sequelizeModel, deleteKey);
                     });
             },
 

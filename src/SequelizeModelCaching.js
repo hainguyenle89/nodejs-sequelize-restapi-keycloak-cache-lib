@@ -12,8 +12,8 @@ class SequelizeModelCaching {
     // enable caching for fast querying Sequelize model
     static enableCaching(sequelizeModel) {
         //add cache function to class method
-        sequelizeModel.cache = function (customKey) {
-            return SequelizeClassMethodsCaching.buildClassMethodsForCaching(SequelizeModelCaching.redisDBClient, sequelizeModel, customKey); 
+        sequelizeModel.cache = function (loggedInUserId, cid) {
+            return SequelizeClassMethodsCaching.buildClassMethodsForCaching(SequelizeModelCaching.redisDBClient, sequelizeModel, loggedInUserId, cid); 
         }
         //add cache function to instance method
         sequelizeModel.prototype.cache = function () {
