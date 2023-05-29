@@ -1,26 +1,10 @@
 import axios from "axios";
-import jwt from "jsonwebtoken";
+import JwtHelper from "./JwtHelper.js";
 
 class RestApiCaching {
     static redisApiClient;
     constructor() {
 
-    }
-
-    static decode(accessToken) {
-        if (accessToken == undefined) {
-          console.error("JWT Helper decodeToken: Missing token");
-          throw new Error("Can not decode: Missing token");
-        } else {
-          try {
-            accessToken = accessToken.replace("Bearer ", "");
-            let decodeToken = jwt.decode(accessToken);
-            return decodeToken;
-          } catch (error) {
-            console.error("JWT Helper decodeToken: Invalid token");
-            throw error;
-          }
-        }
     }
 
     static async apiCache(token, userIdLoggedIn, moduleName, queryUrl, data, apiMethod) {
@@ -32,7 +16,7 @@ class RestApiCaching {
         } else {
             realToken = token;
             if(!userIdLoggedIn) {
-                userLoggedIn = RestApiCaching.decode(realToken).sub ? RestApiCaching.decode(realToken).sub : '';
+                userLoggedIn = JwtHelper.decode(realToken).sub ? JwtHelper.decode(realToken).sub : '';
             } else {
                 userLoggedIn = userIdLoggedIn;
             }

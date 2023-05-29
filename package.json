@@ -1,6 +1,6 @@
 {
   "name": "lakehouse-sequelize-restapi-keycloak-cache",
-  "version": "1.1.2",
+  "version": "1.1.4",
   "description": "caching for all types of data cached on redis hosts/cluster: data from database and sequelize ORM, rest API, keycloak admin api library",
   "main": "src/index.js",
   "type": "module",
