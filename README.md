@@ -39,17 +39,47 @@ Features:
     SequelizeModelCaching.enableCaching(Car);
     
     // caching for each sequelize model methods
-    // methods that don't need params
+    // the cache function accepts 2 params: 
+    // + "loggedInUserId" is the id of the user who has logged in to the system and is interacting with the model
+    // + "id" is the primary key of the model instance with which the user is interacting
+    
+    // caching for each loggedInUserId
+    let response = await Car.cache(loggedInUserId, null).findAll()
+    let response = await Car.cache(loggedInUserId, null).findAndCountAll()
+    let response = await Car.cache(loggedInUserId, null).findOne()
+    let response = await Car.cache(loggedInUserId, null).findByPk()
+    let response = await Car.cache(loggedInUserId, null).create()
+    let response = await Car.cache(loggedInUserId, null).bulkCreate()
+    let response = await Car.cache(loggedInUserId, id).update()
+    let response = Car.cache(loggedInUserId, id).destroy()
+    
+    // caching without the need of knowing who has logged into the system
     let response = await Car.cache().findAll()
     let response = await Car.cache().findAndCountAll()
     let response = await Car.cache().findOne()
     let response = await Car.cache().findByPk()
     let response = await Car.cache().create()
     let response = await Car.cache().bulkCreate()
-    let response = await Car.cache().update()
+    let response = await Car.cache(null, id).update()
+    let response = Car.cache(null, id).destroy()
     
-    // method that need primary key params: example here the "id" primary key
-    let response = Car.cache(id).destroy()
+    // Note that with only postgresql, the sequelize ORM will return the updated object with id in the model update() command:
+    let loggedInUserId = JwtHelper.decode(token).sub;
+    response = await Components.cache(loggedInUserId, id).update({
+        ip: component.ip,
+        port: component.port,
+        protocol: component.protocol,
+        type: component.type,
+        description: component.description
+      },
+      {
+        where: {
+          id: id
+        },
+        returning: true,
+      }
+    );
+    
 
 ### Caching Rest API
     import { RestApiCaching } from "lakehouse-sequelize-restapi-keycloak-cache";
