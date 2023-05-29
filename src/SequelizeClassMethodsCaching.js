@@ -49,7 +49,7 @@ class SequelizeClassMethodsCaching {
                 let compositeKey = {
                     'hashKey': '',
                     'key': '',
-                    'action': 'create'
+                    'action': 'find'
                 };
                 compositeKey['hashKey'] = loggedInUserId ? loggedInUserId+":"+sequelizeModel.name+":findByPk" : 'findByPk';
                 compositeKey['key'] = id ? id : '';
