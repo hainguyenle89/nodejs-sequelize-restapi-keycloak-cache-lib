@@ -76,7 +76,7 @@ Features:
         where: {
           id: id
         },
-        returning: true,
+        **returning: true**,
       }
     );
     
