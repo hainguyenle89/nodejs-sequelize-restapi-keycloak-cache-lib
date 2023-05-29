@@ -63,7 +63,7 @@ Features:
     let response = await Car.cache(null, id).update()
     let response = Car.cache(null, id).destroy()
     
-    // Note that with only postgresql, the sequelize ORM will return the updated object with id in the model update() command:
+    // Note that with only postgresql, the sequelize ORM will return the updated object with id in the model update() command: using option: "returning: true":
     let loggedInUserId = JwtHelper.decode(token).sub;
     response = await Components.cache(loggedInUserId, id).update({
         ip: component.ip,
@@ -76,7 +76,7 @@ Features:
         where: {
           id: id
         },
-        **returning: true**,
+        returning: true,
       }
     );
     
