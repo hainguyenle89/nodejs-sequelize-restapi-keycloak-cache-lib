@@ -277,7 +277,7 @@ Features:
         } catch (error) {
           console.error("AdminClient findGroupsOfUser: " + error);
         }
-      }
+    }
     // => the speed of reading data with cache is as 6x time as that of reading data without cache
     
     //--------------------------------
