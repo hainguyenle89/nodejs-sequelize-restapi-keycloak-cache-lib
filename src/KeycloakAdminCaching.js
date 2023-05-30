@@ -21,7 +21,7 @@ class KeycloakAdminCaching {
         ];
         let kcAdminClient = keycloakAdminClient;
         
-        let func_string = KeycloakAdminCaching.variableToString({kcAdminClient})+"."+moduleName+"."+keycloakAdminClientFuncName;
+        let func_string = KeycloakAdminCaching.variableToString({kcAdminClient})+"."+keycloakAdminClientFuncName;
 
         switch(method) {
             case "GET":

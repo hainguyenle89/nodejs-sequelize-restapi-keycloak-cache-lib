@@ -264,15 +264,13 @@ Features:
     }
     
     // function with cache enabled
-    async findGroupsOfUser(userIdLoggedIn, user_id) {
+    async findGroupsOfUser(userIdLoggedIn, user_id, moduleName) {
         try {
           let method = "GET";
-          let moduleName = "users";
-          let keycloakAdminClientFuncName = "listGroups";
-          let userLoggedIn = userIdLoggedIn;
+          let keycloakAdminClientFuncName = "users.listGroups";
           let queryParams = { id: user_id};
           let bodyParams = null;
-          const groups = KeycloakAdminCaching.keycloakAdminCache(method, kcAdminClient, moduleName, keycloakAdminClientFuncName, userLoggedIn, queryParams, bodyParams);
+          const groups = KeycloakAdminCaching.keycloakAdminCache(method, kcAdminClient, moduleName, keycloakAdminClientFuncName, userIdLoggedIn, queryParams, bodyParams);
           return groups;
         } catch (error) {
           console.error("AdminClient findGroupsOfUser: " + error);
@@ -298,19 +296,17 @@ Features:
     }
     
     // => function with cache enabled
-    async disableUser(userIdLoggedIn, userId) {
+    async disableUser(userIdLoggedIn, userId, moduleName) {
         try {
           let method = "PUT";
-          let moduleName = "users";
-          let keycloakAdminClientFuncName = "update";
-          let userLoggedIn = userIdLoggedIn;
+          let keycloakAdminClientFuncName = "users.update";
           let queryParams = { 
             id: userId
           };
           let bodyParams = {
             enabled: false
           };
-          const response = KeycloakAdminCaching.keycloakAdminCache(method, kcAdminClient, moduleName, keycloakAdminClientFuncName, userLoggedIn, queryParams, bodyParams);
+          const response = KeycloakAdminCaching.keycloakAdminCache(method, kcAdminClient, moduleName, keycloakAdminClientFuncName, userIdLoggedIn, queryParams, bodyParams);
         } catch (error) {
           console.error("AdminClient logoutUser: " + error);
         }
