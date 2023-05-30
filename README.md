@@ -5,7 +5,7 @@
 This is the library of nodejs for caching response data of some popular types of requests: 
 + Sequelize model on the databases that sequelize orm supports: mysql, postgresql...
 + Rest API request
-+ Keycloak admin client Api request (not executed)
++ Keycloak admin client Api request
 
 Features:
 + The Redis hosts/cluster will stand between application and these services: databases, a rest api service, a keycloak service.
