@@ -232,6 +232,10 @@ Features:
       }
 
 ### Caching Keycloak admin function
+=============
+**Keycloak admin and rest api of keycloak need to be the same hash key so that it can refresh properly all cache values that belong to each other and to each logged in user**
+**=> so they need to use the same prefix key, so they have to use the same redisClient.**
+
     import { KeycloakAdminCaching } from "lakehouse-sequelize-restapi-keycloak-cache";
     import KcAdminClient from "@keycloak/keycloak-admin-client";
     
