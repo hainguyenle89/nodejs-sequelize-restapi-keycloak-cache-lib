@@ -11,7 +11,7 @@ Features:
 + The Redis hosts/cluster will stand between application and these services: databases, a rest api service, a keycloak service.
 + This setup will speed up x4 the read speed on a query to these services because the data are cached on Redis hosts/cluster.
 
-### Library is compatible for: Nodejs with or without ES6. Below I use the ES6 syntax for easy understanding.
+### The library is compatible for: Nodejs with or without ES6. Below I use the ES6 syntax for easy understanding.
 
 ### Installation
     # npm install --save lakehouse-sequelize-restapi-keycloak-cache
@@ -230,3 +230,88 @@ Features:
           throw error;
         }
       }
+
+### Caching Keycloak admin function
+    import { KeycloakAdminCaching } from "lakehouse-sequelize-restapi-keycloak-cache";
+    import KcAdminClient from "@keycloak/keycloak-admin-client";
+    
+    KeycloakAdminCaching.redisKeycloakAdminClient = redisClient;
+    
+    let config = {
+      'baseUrl': 'https://abc.com',
+      'realmName': 'realm'
+    }
+    const kcAdminClient = new KcAdminClient({
+      baseUrl: config.baseUrl,
+      realmName: config.realmName,
+    });
+    await kcAdminClient.auth(config);
+    setInterval(() => kcAdminClient.auth(config), 300 * 1000); // 900 seconds
+    
+    // The keycloak admin client functions are also divided into 4 methods: GET, POST, PUT, DELETE
+    // We need to classify each functions into a specific method manually
+    // for example the kcAdminClient.users.listGroups() function is classify as method "GET"
+    
+    // example "GET" method function
+    // function without cache enabled
+    async findGroupsOfUser(userIdLoggedIn, user_id) {
+        try {
+          const groups = await kcAdminClient.users.listGroups({ id: user_id });
+          return groups;
+        } catch (error) {
+          console.error("AdminClient findGroupsOfUser: " + error);
+        }
+    }
+    
+    // function with cache enabled
+    async findGroupsOfUser(userIdLoggedIn, user_id) {
+        try {
+          let method = "GET";
+          let moduleName = "users";
+          let keycloakAdminClientFuncName = "listGroups";
+          let userLoggedIn = userIdLoggedIn;
+          let queryParams = { id: user_id};
+          let bodyParams = null;
+          const groups = KeycloakAdminCaching.keycloakAdminCache(method, kcAdminClient, moduleName, keycloakAdminClientFuncName, userLoggedIn, queryParams, bodyParams);
+          return groups;
+        } catch (error) {
+          console.error("AdminClient findGroupsOfUser: " + error);
+        }
+      }
+    // => the speed of reading data with cache is as 6x time as that of reading data without cache
+    
+    //--------------------------------
+    
+    // example "PUT" method function
+    // function without cache enabled
+    async disableUser(userIdLoggedIn, userId) {
+        try {
+          await kcAdminClient.users.update(
+            { id: userId },
+            {
+              enabled: false,
+            }
+          );
+        } catch (error) {
+          console.error("AdminClient logoutUser: " + error);
+        }
+    }
+    
+    // => function with cache enabled
+    async disableUser(userIdLoggedIn, userId) {
+        try {
+          let method = "PUT";
+          let moduleName = "users";
+          let keycloakAdminClientFuncName = "update";
+          let userLoggedIn = userIdLoggedIn;
+          let queryParams = { 
+            id: userId
+          };
+          let bodyParams = {
+            enabled: false
+          };
+          const response = KeycloakAdminCaching.keycloakAdminCache(method, kcAdminClient, moduleName, keycloakAdminClientFuncName, userLoggedIn, queryParams, bodyParams);
+        } catch (error) {
+          console.error("AdminClient logoutUser: " + error);
+        }
+    }
