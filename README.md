@@ -40,10 +40,11 @@ Features:
     
     // caching for each sequelize model methods
     // the cache function accepts 2 params: 
-    // + "loggedInUserId" is the id of the user who has logged in to the system and is interacting with the model
+    // + "customKey": you can use any key string here to suit your project need on caching plan. For example, we use the "loggedInUserId" which is the id of the user who has logged in to the system and is interacting with the model
     // + "id" is the primary key of the model instance with which the user is interacting
-    
-    // caching for each loggedInUserId
+    let response = await Car.cache(customKey, null).findAll();
+
+    // caching for each "customKey", here example of "loggedInUserId"
     let response = await Car.cache(loggedInUserId, null).findAll();
     let response = await Car.cache(loggedInUserId, null).findAndCountAll();
     let response = await Car.cache(loggedInUserId, null).findOne();
@@ -53,7 +54,7 @@ Features:
     let response = await Car.cache(loggedInUserId, id).update();
     let response = await Car.cache(loggedInUserId, id).destroy();
     
-    // caching without the need of knowing who has logged into the system
+    // caching without the need of customKey, example here we dont need to know who has logged into the system
     let response = await Car.cache().findAll();
     let response = await Car.cache().findAndCountAll();
     let response = await Car.cache().findOne();
@@ -64,8 +65,7 @@ Features:
     let response = await Car.cache(null, id).destroy();
     
     // Note that with only postgresql, the sequelize ORM will return the updated object with id in the model update() command: using option: "returning: true":
-    let loggedInUserId = JwtHelper.decode(token).sub;
-    response = await Components.cache(loggedInUserId, id).update({
+    response = await Components.cache(customKey, id).update({
         ip: component.ip,
         port: component.port,
         protocol: component.protocol,
@@ -103,92 +103,21 @@ Features:
           throw error;
         }
     }
-    // => findAll with enable caching: no  logged in user id
+    // => findAll with enable caching: no customKey, example here is no logged in user id
     async findAll(token) {
         var response = null;
         try {
           let queryUrl = 'https://abc.com/user';
           let apiMethod = "GET"
-	  let moduleName = this.constructor.name;
+	        let moduleName = this.constructor.name;
           let data = RestApiCaching.apiCache(token, null, moduleName, queryUrl, null, apiMethod);
           return data;
         } catch (error) {
           throw error;
         }
     }
-    
-    // => findAll with enable caching: no  logged in user id, but the token contain the logged in user id in the token.sub attribute
-    async findAll(token) {
-        var response = null;
-        try {
-          let queryUrl = 'https://abc.com/user';
-          let apiMethod = "GET"
-	  let moduleName = this.constructor.name;
-          let data = RestApiCaching.apiCache(token, null, moduleName, queryUrl, null, apiMethod);
-          return data;
-        } catch (error) {
-          throw error;
-        }
-    }
-    
-    // => findAll with enable caching: with logged in user id
-    async findAll(token, loggedInUserId) {
-        var response = null;
-        try {
-          let queryUrl = 'https://abc.com/user';
-          let apiMethod = "GET"
-	  let moduleName = this.constructor.name;
-          let data = RestApiCaching.apiCache(token, loggedInUserId, moduleName, queryUrl, null, apiMethod);
-          return data;
-        } catch (error) {
-          throw error;
-        }
-    }
-    
-    // => nearly the same with: saveOne, editOne and deleteOne: with logged in user id
-    async saveOne(token, user, loggedInUserId) {
-        var dateCreate = new Date();
-        user.attributes.dateCreate = [dateCreate];
-        try {
-          let queryUrl = "https://abc.com/user";
-          let data = user;
-          let apiMethod = "POST";
-	  let moduleName = this.constructor.name;
-          let response = RestApiCaching.apiCache(token, loggedInUserId, moduleName, queryUrl, data, apiMethod);
-          return response;
-        } catch (error) {
-          return error;
-        }
-      }
-    
-      async editOne(token, user, loggedInUserId) {
-        var dateModify = new Date();
-        user.attributes.dateModify = [dateModify];
-        try {
-          let queryUrl = "https://abc.com/user/" + user.id;
-          let data = user;
-          let apiMethod = "PUT";
-	  let moduleName = this.constructor.name;
-          let response = RestApiCaching.apiCache(token, loggedInUserId, moduleName, queryUrl, data, apiMethod);
-          return response;
-        } catch (error) {
-          throw error;
-        }
-      }
-    
-      async deleteOne(token, userId, loggedInUserId) {
-        try {
-          let queryUrl = "https://abc.com/user/" + user.id;
-          let apiMethod = "DELETE";
-	  let moduleName = this.constructor.name;
-          let response = RestApiCaching.apiCache(token, loggedInUserId, moduleName, queryUrl, null, apiMethod);
-          return response;
-        } catch (error) {
-          throw error;
-        }
-      }
-      
-      // => nearly the same with: saveOne, editOne and deleteOne: without logged in user id
+
+    // => nearly the same with: saveOne, editOne and deleteOne: without customKey, example here without logged in user id
     async saveOne(token, user) {
         var dateCreate = new Date();
         user.attributes.dateCreate = [dateCreate];
@@ -196,7 +125,7 @@ Features:
           let queryUrl = "https://abc.com/user";
           let data = user;
           let apiMethod = "POST";
-	  let moduleName = this.constructor.name;
+	        let moduleName = this.constructor.name;
           let response = RestApiCaching.apiCache(token, null, moduleName, queryUrl, data, apiMethod);
           return response;
         } catch (error) {
@@ -211,7 +140,7 @@ Features:
           let queryUrl = "https://abc.com/user/" + user.id;
           let data = user;
           let apiMethod = "PUT";
-	  let moduleName = this.constructor.name;
+	        let moduleName = this.constructor.name;
           let response = RestApiCaching.apiCache(token, null, moduleName, queryUrl, data, apiMethod);
           return response;
         } catch (error) {
@@ -223,8 +152,67 @@ Features:
         try {
           let queryUrl = "https://abc.com/user/" + user.id;
           let apiMethod = "DELETE";
-	  let moduleName = this.constructor.name;
+	        let moduleName = this.constructor.name;
           let response = RestApiCaching.apiCache(token, null, moduleName, queryUrl, null, apiMethod);
+          return response;
+        } catch (error) {
+          throw error;
+        }
+      }
+    
+    
+    // => findAll with enable caching: with customKey, example here with logged in user id: customKey = loggedInUserId
+
+    async findAll(token, customKey) {
+        var response = null;
+        try {
+          let queryUrl = 'https://abc.com/user';
+          let apiMethod = "GET"
+	        let moduleName = this.constructor.name;
+          let data = RestApiCaching.apiCache(token, customKey, moduleName, queryUrl, null, apiMethod);
+          return data;
+        } catch (error) {
+          throw error;
+        }
+    }
+    
+    // => nearly the same with: saveOne, editOne and deleteOne: with customKey, example here with logged in user id
+    async saveOne(token, user, customKey) {
+        var dateCreate = new Date();
+        user.attributes.dateCreate = [dateCreate];
+        try {
+          let queryUrl = "https://abc.com/user";
+          let data = user;
+          let apiMethod = "POST";
+	        let moduleName = this.constructor.name;
+          let response = RestApiCaching.apiCache(token, customKey, moduleName, queryUrl, data, apiMethod);
+          return response;
+        } catch (error) {
+          return error;
+        }
+      }
+    
+      async editOne(token, user, customKey) {
+        var dateModify = new Date();
+        user.attributes.dateModify = [dateModify];
+        try {
+          let queryUrl = "https://abc.com/user/" + user.id;
+          let data = user;
+          let apiMethod = "PUT";
+	        let moduleName = this.constructor.name;
+          let response = RestApiCaching.apiCache(token, customKey, moduleName, queryUrl, data, apiMethod);
+          return response;
+        } catch (error) {
+          throw error;
+        }
+      }
+    
+      async deleteOne(token, userId, customKey) {
+        try {
+          let queryUrl = "https://abc.com/user/" + user.id;
+          let apiMethod = "DELETE";
+	        let moduleName = this.constructor.name;
+          let response = RestApiCaching.apiCache(token, customKey, moduleName, queryUrl, null, apiMethod);
           return response;
         } catch (error) {
           throw error;
@@ -259,7 +247,7 @@ Features:
     
     // example "GET" method function
     // function without cache enabled
-    async findGroupsOfUser(userIdLoggedIn, user_id) {
+    async findGroupsOfUser(user_id) {
         try {
           const groups = await kcAdminClient.users.listGroups({ id: user_id });
           return groups;
@@ -268,14 +256,14 @@ Features:
         }
     }
     
-    // function with cache enabled
-    async findGroupsOfUser(userIdLoggedIn, user_id, moduleName) {
+    // function with cache enabled: customKey = userIdLoggedIn
+    async findGroupsOfUser(customKey, user_id, moduleName) {
         try {
           let method = "GET";
           let keycloakAdminClientFuncName = "users.listGroups";
           let queryParams = { id: user_id};
           let bodyParams = null;
-          const groups = KeycloakAdminCaching.keycloakAdminCache(method, kcAdminClient, moduleName, keycloakAdminClientFuncName, userIdLoggedIn, queryParams, bodyParams);
+          const groups = KeycloakAdminCaching.keycloakAdminCache(method, kcAdminClient, moduleName, keycloakAdminClientFuncName, customKey, queryParams, bodyParams);
           return groups;
         } catch (error) {
           console.error("AdminClient findGroupsOfUser: " + error);
@@ -287,7 +275,7 @@ Features:
     
     // example "PUT" method function
     // function without cache enabled
-    async disableUser(userIdLoggedIn, userId) {
+    async disableUser(userId) {
         try {
           await kcAdminClient.users.update(
             { id: userId },
@@ -300,8 +288,8 @@ Features:
         }
     }
     
-    // => function with cache enabled
-    async disableUser(userIdLoggedIn, userId, moduleName) {
+    // => function with cache enabled: customKey = userIdLoggedIn
+    async disableUser(customKey, userId, moduleName) {
         try {
           let method = "PUT";
           let keycloakAdminClientFuncName = "users.update";
@@ -311,7 +299,7 @@ Features:
           let bodyParams = {
             enabled: false
           };
-          const response = KeycloakAdminCaching.keycloakAdminCache(method, kcAdminClient, moduleName, keycloakAdminClientFuncName, userIdLoggedIn, queryParams, bodyParams);
+          const response = KeycloakAdminCaching.keycloakAdminCache(method, kcAdminClient, moduleName, keycloakAdminClientFuncName, customKey, queryParams, bodyParams);
         } catch (error) {
           console.error("AdminClient logoutUser: " + error);
         }
