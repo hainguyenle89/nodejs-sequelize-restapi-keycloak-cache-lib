@@ -52,8 +52,13 @@ Features:
     let response = await Car.cache(loggedInUserId, null).create();
     let response = await Car.cache(loggedInUserId, null).bulkCreate();
     let response = await Car.cache(loggedInUserId, id).update();
+
+    // destroy a single record
     let response = await Car.cache(loggedInUserId, id).destroy();
+    // destroy multiple records
+    let response = await Car.cache(loggedInUserId, null).destroy();
     
+
     // caching without the need of customKey, example here we dont need to know who has logged into the system
     let response = await Car.cache().findAll();
     let response = await Car.cache().findAndCountAll();
@@ -63,6 +68,12 @@ Features:
     let response = await Car.cache().bulkCreate();
     let response = await Car.cache(null, id).update();
     let response = await Car.cache(null, id).destroy();
+
+    // destroy a single record
+    let response = await Car.cache(null, id).destroy();
+    // destroy multiple records
+    let response = await Car.cache(null, null).destroy();
+
     
     // Note that with only postgresql, the sequelize ORM will return the updated object with id in the model update() command: using option: "returning: true":
     response = await Components.cache(customKey, id).update({
