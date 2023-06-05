@@ -216,6 +216,20 @@ class CachingUtils {
     return await cacheClient.hset(hashKey, compositeKey.key, instances.map(CachingUtils.instanceToData))
         .then(() => instances);
   }
+
+  // set array value of a key and the hash key to a hash set and store Count for findAndCountAll
+  static async saveHashAndCountAll(cacheClient, model, countAndInstances, compositeKey) {
+    const hashKey = [
+      compositeKey.hashKey,
+      // model.name
+      
+    ]
+  
+    // return cacheClient.set(key, instances.map(CachingUtils.instanceToData))
+    //   .then(() => instances)
+    return await cacheClient.hset(hashKey, compositeKey.key, JSON.stringify(countAndInstances))
+        .then(() => countAndInstances);
+  }
     
   // getAll(cacheClient, model, customKey) {
   //     const key = [
@@ -259,6 +273,21 @@ class CachingUtils {
     }
     // console.log(dataArray);
     return dataArray.map(data => CachingUtils.dataToInstance(model, data));
+  }
+
+  // get value from a key and the hash key from a hash set and Count all
+  static async getHashAndCountAll(cacheClient, model, compositeKey) {
+    const hashKey = [
+      // model.name,
+      compositeKey.hashKey
+    ]
+  
+    let data = await cacheClient.hget(hashKey, compositeKey.key);
+    if (!data) { // undefined - cache miss
+      return data
+    }
+    // console.log(dataArray);
+    return JSON.parse(data);
   }
     
   // get(cacheClient, model, customKey) {

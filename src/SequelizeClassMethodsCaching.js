@@ -121,7 +121,7 @@ class SequelizeClassMethodsCaching {
             // }
 
             async findAll(queryOptions) {
-                let queryOptiontString = CachingUtils.stringifyQueryOptions(queryOptions);
+                let queryOptiontString = queryOptions ? CachingUtils.stringifyQueryOptions(queryOptions) : '';
                 let compositeKey = {
                     'hashKey': '',
                     'key': '',
@@ -143,7 +143,7 @@ class SequelizeClassMethodsCaching {
             },
 
             async findAndCountAll(queryOptions) {
-                let queryOptiontString = CachingUtils.stringifyQueryOptions(queryOptions);
+                let queryOptiontString = queryOptions ? CachingUtils.stringifyQueryOptions(queryOptions) : '';
 
                 let compositeKey = {
                     'hashKey': '',
@@ -154,13 +154,16 @@ class SequelizeClassMethodsCaching {
                 compositeKey.key = 'findAndCountAll'+queryOptiontString;
                 
                 // let instances = await CachingUtils.getAll(cacheClient, sequelizeModel, customKey);
-                let instances = await CachingUtils.getHashAll(cacheClient, sequelizeModel, compositeKey);
-                if (instances) { // any array - cache hit
-                    // console.log(instances);
-                    return instances;
+                let countAndInstances = await CachingUtils.getHashAndCountAll(cacheClient, sequelizeModel, compositeKey);
+                if (countAndInstances) { // any array - cache hit
+                    // console.log(instances);  
+                    return countAndInstances;
                 } else {
-                    let instances = await sequelizeModel.findAll.apply(sequelizeModel, arguments);
-                    return await CachingUtils.saveHashAll(cacheClient, sequelizeModel, instances, compositeKey);
+                    return await sequelizeModel.findAndCountAll.apply(sequelizeModel, arguments)
+                        .then((countAndInstances) => {
+                            return CachingUtils.saveHashAndCountAll(cacheClient, sequelizeModel, countAndInstances, compositeKey);
+                        });
+                    return 
                 }
         
             },
@@ -181,7 +184,7 @@ class SequelizeClassMethodsCaching {
             // }
 
             async findOne(queryOptions) {
-                let queryOptiontString = CachingUtils.stringifyQueryOptions(queryOptions);
+                let queryOptiontString = queryOptions ? CachingUtils.stringifyQueryOptions(queryOptions) : '';
                 let compositeKey = {
                     'hashKey': '',
                     'key': '',
