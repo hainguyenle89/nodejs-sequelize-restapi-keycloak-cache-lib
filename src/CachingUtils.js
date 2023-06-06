@@ -4,11 +4,15 @@ class CachingUtils {
   }
 
   // desymbolize the symbols on sequelize query (option) so that we can JSON stringify the symbol
-  // BUT There are a couple ISSUES with this FUNCTION. The first is that typeof null is "object". The second is that it does not handle object reference cycles.
+  // BUT There are a couple ISSUES with this FUNCTION. The first is that typeof null is "object". The second is that it does not handle object reference cycles.  
   static desymbolize(object) {
     if (Array.isArray(object)) {
       return object.map(CachingUtils.desymbolize);
-    } else if (typeof object != "object") {
+      // solved "object is FUNCTION, CLASS MODEL" (handle object reference cycles)
+    } else if (typeof object === "function") {
+      return object.name;
+      // solved NULL object 
+    } else if (typeof object != "object" || object === null) {
       return object;
     } else {
       let d = Object.assign(Object.create(Object.getPrototypeOf(object)), object);
@@ -27,7 +31,7 @@ class CachingUtils {
     Object.entries(queryOpt).forEach(([key, value]) => {  
         // console.log(`${key}: ${value}`);
         // if encounter "where" options, we need to desymbolize the symbol inside it
-        if (key === "where") {
+        if (key === "where" || key === "include") {
           queryOptString += ':'+key+JSON.stringify(CachingUtils.desymbolize(value))
         } else {
           queryOptString += ':'+key+JSON.stringify(value)
