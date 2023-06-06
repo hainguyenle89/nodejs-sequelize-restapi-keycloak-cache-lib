@@ -25,7 +25,7 @@ class SequelizeClassMethodsCaching {
                 // return CachingUtils.save(cacheClient, instance, 'id:'+instance.dataValues.id);
 
                 // clear hashKey 'find' because a new record has been added
-                let deleteKey = loggedInUserId ? loggedInUserId+":"+sequelizeModel.name+':find' : sequelizeModel.name+'find';
+                let deleteKey = loggedInUserId ? loggedInUserId+":"+sequelizeModel.name+':find' : sequelizeModel.name+':find';
                 await CachingUtils.clearKey(cacheClient, sequelizeModel, deleteKey);
                 return instance;
             },
@@ -41,7 +41,7 @@ class SequelizeClassMethodsCaching {
                 if(instances) {
                     await CachingUtils.saveHashMultiKeys(cacheClient, sequelizeModel, instances, compositeKey);
                     // clear hashKey 'find' because new records has been added
-                    let deleteKey = loggedInUserId ? loggedInUserId+":"+sequelizeModel.name+':find' : sequelizeModel.name+'find';
+                    let deleteKey = loggedInUserId ? loggedInUserId+":"+sequelizeModel.name+':find' : sequelizeModel.name+':find';
                     await CachingUtils.clearKey(cacheClient, sequelizeModel, deleteKey);
                 }
                 return instances;
@@ -92,7 +92,7 @@ class SequelizeClassMethodsCaching {
                 // if update successfully on database
                 if (instance[0] === 1) {
                     await CachingUtils.clearHashKey(cacheClient, sequelizeModel, compositeKey.hashKey, compositeKey.key);
-                    let deleteKey = loggedInUserId ? loggedInUserId+":"+sequelizeModel.name+':find' : sequelizeModel.name+'find';
+                    let deleteKey = loggedInUserId ? loggedInUserId+":"+sequelizeModel.name+':find' : sequelizeModel.name+':find';
                     await CachingUtils.clearKey(cacheClient, sequelizeModel, deleteKey);
                     if (instance[1])
                         return await CachingUtils.saveHash(cacheClient, sequelizeModel.build(instance[1][0].dataValues), compositeKey)
@@ -211,7 +211,7 @@ class SequelizeClassMethodsCaching {
                 compositeKey['hashKey'] = loggedInUserId ? loggedInUserId+":"+sequelizeModel.name+':findByPk' : sequelizeModel.name+':findByPk';
                 compositeKey['key'] = cid ? cid : '';
                 await sequelizeModel.destroy.apply(sequelizeModel, arguments);
-                let deleteKey = loggedInUserId ? loggedInUserId+":"+sequelizeModel.name+':find' : sequelizeModel.name+'find';
+                let deleteKey = loggedInUserId ? loggedInUserId+":"+sequelizeModel.name+':find' : sequelizeModel.name+':find';
                 if (compositeKey['key'] === '') {
                     return await CachingUtils.clearKey(cacheClient, sequelizeModel, compositeKey.hashKey)
                         .then(() => {
