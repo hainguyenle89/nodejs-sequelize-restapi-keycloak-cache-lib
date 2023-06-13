@@ -162,8 +162,7 @@ class SequelizeClassMethodsCaching {
                     return await sequelizeModel.findAndCountAll.apply(sequelizeModel, arguments)
                         .then((countAndInstances) => {
                             return CachingUtils.saveHashAndCountAll(cacheClient, sequelizeModel, countAndInstances, compositeKey);
-                        });
-                    return 
+                        }); 
                 }
         
             },

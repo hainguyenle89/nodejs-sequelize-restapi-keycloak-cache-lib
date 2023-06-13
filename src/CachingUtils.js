@@ -102,14 +102,35 @@ class CachingUtils {
           return hasOptions
       })
       .map(([as, association]) => {
-          const associatedModel = model.sequelize.model(association.target.name)
+          // console.log(model);
+          // console.log(model.sequelize.models(association.target.name));
+          const associatedModel = association.target
           return {
               model: associatedModel,
               include: CachingUtils.generateIncludeRecurse(associatedModel, depth + 1),
               as
           }
       })
-  }    
+  }
+  
+  // static generateIncludeRecurse(model, depth = 1) {
+  //   if (depth > 5) {
+  //       return []
+  //   }
+  //   return Object.entries(model.associations || [])
+  //     .filter(([as, association]) => {
+  //         const hasOptions = Object.prototype.hasOwnProperty.call(association, 'options')
+  //         return hasOptions
+  //     })
+  //     .map(([as, association]) => {
+  //         const associatedModel = model.sequelize.model(association.target.name)
+  //         return {
+  //             model: associatedModel,
+  //             include: CachingUtils.generateIncludeRecurse(associatedModel, depth + 1),
+  //             as
+  //         }
+  //     })
+  // } 
 
   static getInstanceModel(instance) {
     return instance.constructor
